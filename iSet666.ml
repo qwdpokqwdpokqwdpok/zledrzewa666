@@ -1,5 +1,5 @@
 
-
+(* autor Krzysztof Lagodzinski reviwer Filip Bienkowski *)
 
 
 
@@ -8,7 +8,7 @@
 
 
 (* bez zmian - skopiowane z pSet *)
-
+(* zgodnie ze specyfikacja - opis funkcji w iSet.mli *)
 
 (* poddrzewo, przedzial, poddrzewo, (wysokosc, ilosc liczb) *)
 type t =
@@ -62,7 +62,7 @@ let cmp (a, b) (c, d) =
     else 0
 
 (* bal z pSet ze zmianami ze wzgledu na typ t (* zmiana tylko w ostatniej linijce *) *)
-(* funkcja przebudowuje typ t tak aby roznica wysokosci poddrzew byla nie wieksza niz 2 *)
+(* funkcja przebudowuje typ t tak, aby roznica wysokosci poddrzew byla nie wieksza niz 2 *)
 let bal l k r =
   let hl = height l in
   let hr = height r in
