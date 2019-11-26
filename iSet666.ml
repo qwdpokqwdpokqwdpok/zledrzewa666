@@ -10,32 +10,36 @@
 (* bez zmian - skopiowane z pSet *)
 
 
-(* poddrzewo, przedzial, poddrzewo, wysokosc, ilosc liczb *)
+(* poddrzewo, przedzial, poddrzewo, (wysokosc, ilosc liczb) *)
 type t =
   | Empty
   | Node of t * (int * int) * t * (int * int)
 
+(* pusty typ t *)
 let empty =
     Empty
 
+(* sprawdza czy t jest pusty *)
 let is_empty set = 
   set = Empty
 
 (* dodawanie z uwzglednieniem max_int i min_int *)
-(* - min_int = min_int !! *)
 let safe_add x y =
     if x >= 0 && y >= 0 && x >= max_int - y then max_int
     else if x <= 0 && y <= 0 && x <= min_int - y then min_int
     else x + y
 
+(* zwraca wysokosc t *)
 let height = function
   | Node (_, _, _, (h, _)) -> h
   | Empty -> 0
 
+(* zwraca ile liczb zawiera t *)
 let number_of_elements = function
   | Node (_, _, _, (_, n)) -> n
   | Empty -> 0
 
+(* l < k < r zwraca typ t, zbudowany z l k r *)
 (* - min_int = min_int !! dlatego 1 przypadek *)
 let make l ((x, y) as k) r =
     if (x = min_int) then
@@ -58,7 +62,7 @@ let cmp (a, b) (c, d) =
     else 0
 
 (* bal z pSet ze zmianami ze wzgledu na typ t (* zmiana tylko w ostatniej linijce *) *)
-(* mozna pomyslec o zmianie 2 w roznicy wysokosci na inna liczbe *)
+(* funkcja przebudowuje typ t tak aby roznica wysokosci poddrzew byla nie wieksza niz 2 *)
 let bal l k r =
   let hl = height l in
   let hr = height r in
@@ -122,6 +126,7 @@ let rec join_separate l v r =
 
 (* split wykonuje sie w czasie proporcjonalnym do wysokosci, gdyz, tak jak bylo wyjasniony w opisie zadania,
 na split sklada sie ciag operacji join_separate wykonywanych na drzewach ktorych roznica wysokosci jest coraz mniejsza *)
+(* zgodnie ze specyfikacja *)
 let split x set =
   let rec loop x = function
       Empty ->
@@ -143,18 +148,21 @@ let split x set =
   in loop x set
 
 (* bez zmian *)
+(* zwraca najmniejszy przedzial w t *)
 let rec min_elt = function
   | Node (Empty, k, _, _) -> k
   | Node (l, _, _, _) -> min_elt l
   | Empty -> raise Not_found
 
 (* bez zmian *)
+(* usuwa najmniejszy przedzial w t *)
 let rec remove_min_elt = function
   | Node (Empty, _, r, _) -> r
   | Node (l, k, r, _) -> bal (remove_min_elt l) k r
   | Empty -> invalid_arg "PSet.remove_min_elt"
 
 (* bez zmian *)
+(* laczy dwa obiekty typu t *)
 (* t1 musi miec wszystkie elementy mniejsze o co najmniej 2 od najmniejszego elementu t2 *)
 (* t1 oraz t2 musza byc zbilansowanymi pod wzgledem wysokosci zbiorami typu t*)
 let merge t1 t2 =
@@ -168,6 +176,7 @@ let merge t1 t2 =
 (* split x set to przedzialy mniejsze od x (polaczone w drzewo t),
 split y set to przedzialy wieksze od y,
 wyniki spelniaja specyfikacje merge *)
+(* usuwa przedzial z t *)
 let remove (x, y) set =
     let (t1, _, _) = split x set in
     let (_, _, t2) = split y set
@@ -194,6 +203,7 @@ let rec cross ((a, b) as x) = function
         else cross x r
     | Empty -> x
 
+(* dodaje x do zbioru set *)
 let add x set =
     let ((xa, xb) as xx) = cross x set in
     let (l, _, _) = split xa set in
@@ -201,6 +211,7 @@ let add x set =
     join_separate l xx r
 
 (* bez zmian (* zmiana przy cmp z x na (x, x) *) *)
+(* zgodnie ze specyfikacja *)
 let mem x set =
   let rec loop = function
     | Node (l, k, r, _) ->
@@ -210,6 +221,7 @@ let mem x set =
   loop set
 
 (* bez zmian *)
+(* zgodnie ze specyfikacja *)
 let iter f set =
   let rec loop = function
     | Empty -> ()
@@ -217,6 +229,7 @@ let iter f set =
   loop set
 
 (* bez zmian *)
+(* zgodnie ze specyfikacja *)
 let fold f set acc =
   let rec loop acc = function
     | Empty -> acc
@@ -225,12 +238,14 @@ let fold f set acc =
   loop acc set
 
 (* bez zmian *)
+(* zgodnie ze specyfikacja *)
 let elements set = 
   let rec loop acc = function
       Empty -> acc
     | Node(l, k, r, _) -> loop (k :: loop acc r) l in
   loop [] set
 
+(* zgodnie ze specyfikacja *)
 let below x set =
     let (l, present, r) = split x set in
     safe_add (number_of_elements l) (if present then 1 else 0)
