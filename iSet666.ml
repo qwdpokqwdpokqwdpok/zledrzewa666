@@ -1,7 +1,25 @@
 
-(* autor Krzysztof Lagodzinski reviwer Filip Bienkowski *)
+(* autor Krzysztof Lagodzinski reviewer Filip Bienkowski *)
 
-
+(*
+ * PSet - Polymorphic sets
+ * Copyright (C) 1996-2003 Xavier Leroy, Nicolas Cannasse, Markus Mottl
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version,
+ * with the special exception on linking described in file LICENSE.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *)
 
 
 
@@ -89,9 +107,9 @@ let bal l k r =
   else make l k r
 
 (* jezeli przedzial nie przecina zadnego sposrod przedzialow do ktorych go dodajemy,
-mozna uzyc add_one z pSet z malymi zmianami
+mozna uzyc add_one z pSet z malymi zmianami *)
 
-funkcja znajduje miejsce, w ktorym mozna umiescic przedzial
+(* funkcja znajduje miejsce, w ktorym mozna umiescic przedzial
 (z kazdym krokiem rekurencyjnym wysokosc zmniejsza sie o 1),
 a nastepnie wykonuje bal co najwyzej tyle razy, ile wynosi wysokosc wynikowego drzewa *)
 
@@ -124,8 +142,10 @@ let rec join_separate l v r =
       if rh > lh + 2 then bal (join_separate l v rl) rv rr else
       make l v r
 
-(* split wykonuje sie w czasie proporcjonalnym do wysokosci, gdyz, tak jak bylo wyjasniony w opisie zadania,
-na split sklada sie ciag operacji join_separate wykonywanych na drzewach ktorych roznica wysokosci jest coraz mniejsza *)
+(* split wykonuje sie w czasie proporcjonalnym do wysokosci, gdyz, tak jak to bylo wyjasnione w opisie zadania,
+na split sklada sie ciag operacji join_separate, ktorych koszty sumuja sie do wysokosci drzewa razy pewna stala
+(* a dokladniej w kazdym kroku roznica wysokosci drzew, ktore wykorzystuje join_ separate jest co najwyzej 5,
+liczba krokow jest ograniczona przez wysokosc drzewa, add separate wykona sie co najwyzej 1 *) *)
 (* zgodnie ze specyfikacja *)
 let split x set =
   let rec loop x = function
@@ -191,7 +211,8 @@ let cmp1 (a, b) (c, d) =
     else if safe_add d 1 < a then 1
     else 0
 
-(* suma wszystkich przedzialow ze zbioru typu t, ktore przecinaja x; oraz samego x *) 
+(* suma wszystkich przedzialow ze zbioru typu t, ktore przecinaja x; oraz samego x *)
+(* w kazdym kroku rekurencyjnym zmniejsza sie wysokosc drzewa *)
 let rec cross ((a, b) as x) = function
     | Node (l, ((ka, kb) as k), r, _) ->
         if cmp1 x k = 0 then
@@ -254,7 +275,7 @@ let below x set =
 
 
 
-
+(* TESTY
 
 let zle = ref 0
 let test n b =
@@ -739,6 +760,6 @@ let _ =
 
 
 
-
+*)
 
 
